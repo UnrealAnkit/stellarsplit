@@ -254,8 +254,13 @@ function CreateBillTab({ accounts, createBill }) {
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount)<=0)
                          { setStatus({ type:"warn", msg:"Enter a valid XLM amount." }); return; }
     if (paidByIdx === "") { setStatus({ type:"warn", msg:"Select who paid." }); return; }
+    if (members.length < 2) { setStatus({ type:"warn", msg:"Add at least 2 members." }); return; }
+
     const filledMembers = members.filter(m=>m.name.trim()&&m.publicKey.trim());
-    if (filledMembers.length < 2) { setStatus({ type:"warn", msg:"Add at least 2 members." }); return; }
+    if (filledMembers.length < 2) {
+      setStatus({ type:"warn", msg:"Fill name and wallet address for at least 2 members." });
+      return;
+    }
 
     const payer = accounts[parseInt(paidByIdx)];
     const bill  = createBill({
@@ -329,12 +334,12 @@ function CreateBillTab({ accounts, createBill }) {
         </button>
 
         {/* preview */}
-        {amount && members.filter(m=>m.name).length > 0 && (
+        {amount && members.filter(m=>m.name.trim() && m.publicKey.trim()).length > 0 && (
           <div style={{ background:T.bg2, border:`1px solid ${T.border}`, borderRadius:10, padding:"12px 16px", marginBottom:16, fontSize:11, color:T.muted }}>
             <span style={{ color:T.lime, fontWeight:600 }}>Split Preview: </span>
-            {parseFloat(amount).toFixed(4)} XLM ÷ {members.filter(m=>m.name).length} people
-            = <span style={{ color:T.yellow }}>{(parseFloat(amount||0)/Math.max(members.filter(m=>m.name).length,1)).toFixed(4)} XLM each</span>
-            <span style={{ color:T.muted }}> (~${(parseFloat(amount||0)/Math.max(members.filter(m=>m.name).length,1)*0.12).toFixed(2)} USD)</span>
+            {parseFloat(amount).toFixed(4)} XLM ÷ {members.filter(m=>m.name.trim() && m.publicKey.trim()).length} people
+            = <span style={{ color:T.yellow }}>{(parseFloat(amount||0)/Math.max(members.filter(m=>m.name.trim() && m.publicKey.trim()).length,1)).toFixed(4)} XLM each</span>
+            <span style={{ color:T.muted }}> (~${(parseFloat(amount||0)/Math.max(members.filter(m=>m.name.trim() && m.publicKey.trim()).length,1)*0.12).toFixed(2)} USD)</span>
           </div>
         )}
 
